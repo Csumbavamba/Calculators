@@ -24,7 +24,7 @@
 #define WINDOW_CLASS_NAME L"WINCLASS1"
 
 HMENU menu;
-HWND hDialogMatrix, hDialogTransformation, hDialogGaussian, hDialogQuaternion, hDialogSlerp;
+HWND dialogMatrix, dialogTransformation, dialogGaussian, dialogQuaternion, dialogSlerp;
 
 void GameLoop()
 {
@@ -37,7 +37,7 @@ LRESULT CALLBACK WindowProc(HWND hwnd,
 	LPARAM lParam)
 {
 	// This is the main message handler of the system.
-	PAINTSTRUCT ps; // Used in WM_PAINT.
+	PAINTSTRUCT paintStruct; // Used in WM_PAINT.
 	HDC hdc;        // Handle to a device context.
 
 					// What is the message?
@@ -55,11 +55,11 @@ LRESULT CALLBACK WindowProc(HWND hwnd,
 	case WM_PAINT:
 	{
 		// Simply validate the window.
-		hdc = BeginPaint(hwnd, &ps);
+		hdc = BeginPaint(hwnd, &paintStruct);
 
 		// You would do all your painting here...
 
-		EndPaint(hwnd, &ps);
+		EndPaint(hwnd, &paintStruct);
 
 		// Return Success.
 		return (0);
@@ -77,31 +77,31 @@ LRESULT CALLBACK WindowProc(HWND hwnd,
 		}
 		case ID_CALCULATOR_MATRIX:
 		{
-			ShowWindow(hDialogMatrix, SW_SHOWNORMAL);
+			ShowWindow(dialogMatrix, SW_SHOWNORMAL);
 			break;
 		}
 		case ID_CALCULATOR_TRANSFORMATION:
 		{
-			ShowWindow(hDialogTransformation, SW_SHOWNORMAL);
+			ShowWindow(dialogTransformation, SW_SHOWNORMAL);
 			break;
 
 		}
 		//open the matrix dialog
 		case ID_CALCULATOR_GAUSSIAN:
 		{
-			ShowWindow(hDialogGaussian, SW_SHOWNORMAL);
+			ShowWindow(dialogGaussian, SW_SHOWNORMAL);
 			break;
 		}
 		//open the gaussian dialog
 		case ID_CALCULATOR_QUATERNION:
 		{
-			ShowWindow(hDialogQuaternion, SW_SHOWNORMAL);
+			ShowWindow(dialogQuaternion, SW_SHOWNORMAL);
 			break;
 		}
 		//open the quaternion dialog
 		case ID_CALCULATOR_SLERP:
 		{
-			ShowWindow(hDialogSlerp, SW_SHOWNORMAL);
+			ShowWindow(dialogSlerp, SW_SHOWNORMAL);
 			break;
 		}
 		default:
@@ -134,7 +134,7 @@ BOOL CALLBACK MatrixDlgProc(HWND hwnd,
 	WPARAM wParam,
 	LPARAM lParam)
 {
-	static float value;
+	static float _value;
 	switch (message)
 	{
 	case WM_COMMAND:
@@ -143,7 +143,7 @@ BOOL CALLBACK MatrixDlgProc(HWND hwnd,
 		{
 		case IDC_EDIT_A11:
 		{
-			value = ReadFromEditBox(hwnd, IDC_EDIT_A11);
+			_value = ReadFromEditBox(hwnd, IDC_EDIT_A11);
 			break;
 		}
 		default:
@@ -154,7 +154,7 @@ BOOL CALLBACK MatrixDlgProc(HWND hwnd,
 	}
 	case WM_CLOSE:
 	{
-		MessageBox(hwnd, ToWideString(value).c_str(), L"Value in A11", MB_OK);
+		MessageBox(hwnd, ToWideString(_value).c_str(), L"Value in A11", MB_OK);
 		ShowWindow(hwnd, SW_HIDE);
 		return TRUE;
 		break;
@@ -228,12 +228,12 @@ BOOL CALLBACK QuaternionDlgProc(HWND hwnd,
 }
 
 BOOL CALLBACK SLERPDlgProc(HWND hwnd,
-	UINT message,
+	UINT msg,
 	WPARAM wParam,
 	LPARAM lParam)
 {
 
-	switch (message)
+	switch (msg)
 	{
 	case WM_CLOSE:
 	{
@@ -248,13 +248,13 @@ BOOL CALLBACK SLERPDlgProc(HWND hwnd,
 }
 
 int WINAPI WinMain(HINSTANCE hInstance,
-	HINSTANCE _hPrevInstance,
-	LPSTR _lpCmdLine,
-	int _nCmdShow)
+	HINSTANCE hPrevInstance,
+	LPSTR commandLine,
+	int commandShow)
 {
 	WNDCLASSEX winclass; // This will hold the class we create.
 	HWND hwnd;           // Generic window handle.
-	MSG msg;             // Generic message.
+	MSG message;             // Generic message.
 
 						 // First fill in the window class structure.
 	winclass.cbSize = sizeof(WNDCLASSEX);
@@ -299,31 +299,31 @@ int WINAPI WinMain(HINSTANCE hInstance,
 
 	//Create the modeless dialog boxes for the calculators
 	//Matrix Calculator
-	hDialogMatrix = CreateDialog(hInstance, MAKEINTRESOURCE(IDD_DialogMatrix), hwnd, (DLGPROC)MatrixDlgProc);
-	hDialogTransformation = CreateDialog(hInstance, MAKEINTRESOURCE(IDD_DialogTransformations), hwnd, (DLGPROC)TransformationDlgProc);
-	hDialogGaussian = CreateDialog(hInstance, MAKEINTRESOURCE(IDD_DialogGaussian), hwnd, (DLGPROC)GaussianDlgProc);
-	hDialogQuaternion = CreateDialog(hInstance, MAKEINTRESOURCE(IDD_DialogQuaternion), hwnd, (DLGPROC)QuaternionDlgProc);
-	hDialogSlerp = CreateDialog(hInstance, MAKEINTRESOURCE(IDD_DialogSLERP), hwnd, (DLGPROC)SLERPDlgProc);
+	dialogMatrix = CreateDialog(hInstance, MAKEINTRESOURCE(IDD_DialogMatrix), hwnd, (DLGPROC)MatrixDlgProc);
+	dialogTransformation = CreateDialog(hInstance, MAKEINTRESOURCE(IDD_DialogTransformations), hwnd, (DLGPROC)TransformationDlgProc);
+	dialogGaussian = CreateDialog(hInstance, MAKEINTRESOURCE(IDD_DialogGaussian), hwnd, (DLGPROC)GaussianDlgProc);
+	dialogQuaternion = CreateDialog(hInstance, MAKEINTRESOURCE(IDD_DialogQuaternion), hwnd, (DLGPROC)QuaternionDlgProc);
+	dialogSlerp = CreateDialog(hInstance, MAKEINTRESOURCE(IDD_DialogSLERP), hwnd, (DLGPROC)SLERPDlgProc);
 
 	// Enter main event loop
 	while (true)
 	{
 		// Test if there is a message in queue, if so get it.
-		if (PeekMessage(&msg, NULL, 0, 0, PM_REMOVE))
+		if (PeekMessage(&message, NULL, 0, 0, PM_REMOVE))
 		{
 			// Test if this is a quit.
-			if (msg.message == WM_QUIT)
+			if (message.message == WM_QUIT)
 			{
 				break;
 			}
 
-			if ((hDialogMatrix == 0 && hDialogTransformation == 0 && hDialogGaussian == 0 && hDialogQuaternion == 0 && hDialogSlerp == 0) ||
-				(!IsDialogMessage(hDialogMatrix, &msg) && !IsDialogMessage(hDialogTransformation, &msg) && !IsDialogMessage(hDialogGaussian, &msg) && !IsDialogMessage(hDialogQuaternion, &msg) && !IsDialogMessage(hDialogSlerp, &msg)))
+			if ((dialogMatrix == 0 && dialogTransformation == 0 && dialogGaussian == 0 && dialogQuaternion == 0 && dialogSlerp == 0) ||
+				(!IsDialogMessage(dialogMatrix, &message) && !IsDialogMessage(dialogTransformation, &message) && !IsDialogMessage(dialogGaussian, &message) && !IsDialogMessage(dialogQuaternion, &message) && !IsDialogMessage(dialogSlerp, &message)))
 			{
 				// Translate any accelerator keys.
-				TranslateMessage(&msg);
+				TranslateMessage(&message);
 				// Send the message to the window proc.
-				DispatchMessage(&msg);
+				DispatchMessage(&message);
 			}
 		}
 
@@ -332,7 +332,7 @@ int WINAPI WinMain(HINSTANCE hInstance,
 	}
 
 	// Return to Windows like this...
-	return (static_cast<int>(msg.wParam));
+	return (static_cast<int>(message.wParam));
 }
 
 

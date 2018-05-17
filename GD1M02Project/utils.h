@@ -35,40 +35,40 @@
 #define VALIDATE(a) if (!a) return (false)
 
 template<typename T>
-std::string ToString(const T& value)
+std::string ToString(const T& _value)
 {
 	std::strstream theStream;
-	theStream << value << std::ends;
+	theStream << _value << std::ends;
 	return (theStream.str());
 }
 
 template<typename T>
-std::wstring ToWideString(const T& value)
+std::wstring ToWideString(const T& _value)
 {
 	std::wstringstream theStream;
-	theStream << value << std::ends;
+	theStream << _value << std::ends;
 	return (theStream.str());
 }
 
-float ReadFromEditBox(HWND hDialog, int resourceID)
+float ReadFromEditBox(HWND _hDlg, int _iResourceID)
 {
-	wchar_t value[10];
-	ZeroMemory(value, 10);
-	GetDlgItemText(hDialog, resourceID, value, 10);
-	if (value[0] == 0)
+	wchar_t _pcValue[10];
+	ZeroMemory(_pcValue, 10);
+	GetDlgItemText(_hDlg, _iResourceID, _pcValue, 10);
+	if (_pcValue[0] == 0)
 	{
 		return 0.0f;
 	}
 	else
 	{
-		return static_cast<float>(_wtof(value));
+		return static_cast<float>(_wtof(_pcValue));
 	}
 }
 
-void WriteToEditBox(HWND hDialog, int resourceID, float value)
+void WriteToEditBox(HWND _hDlg, int _iResourceID, float _fValue)
 {
-	std::wstring stringValue = ToWideString(value);
-	SetDlgItemText(hDialog, resourceID, stringValue.c_str());
+	std::wstring _strValue = ToWideString(_fValue);
+	SetDlgItemText(_hDlg, _iResourceID, _strValue.c_str());
 }
 
 #endif    // __UTILS_H__
